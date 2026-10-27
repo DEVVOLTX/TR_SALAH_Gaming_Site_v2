@@ -56,7 +56,7 @@ function App() {
     const categoryMatch = activeCategory === 'الكل' || game.category === activeCategory
     const searchMatch = `${game.name} ${game.sub}`.toLowerCase().includes(search.toLowerCase())
     return categoryMatch && searchMatch
-  }), [activeCategory, search])
+  }), [games, activeCategory, search])
 
   useEffect(() => { try { localStorage.setItem('ts_cart', JSON.stringify(cart)) } catch {} }, [cart])
   useEffect(() => { try { localStorage.setItem('ts_player_ids', JSON.stringify(savedIds)) } catch {} }, [savedIds])
