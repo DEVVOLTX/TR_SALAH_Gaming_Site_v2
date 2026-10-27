@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in ['amrt6509@gmail.com', 'salahahmed1102010@gmail.com'];
+    }
+
+    // الكتالوج: الكل يقرأ، الأدمن فقط يكتب
+    match /store/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // الطلبات: أي زائر يقدر يسجّل طلب بشكل محدود، والأدمن فقط يقرأ ويعدّل
+    match /orders/{orderId} {
+      allow create: if request.resource.data.keys().hasOnly(['no', 'items', 'total', 'payment', 'status', 'createdAt'])
+        && request.resource.data.status == 'new'
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.items.size() <= 20
+        && request.resource.data.total is number
+        && request.resource.data.total > 0
+        && request.resource.data.total <= 100000;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
